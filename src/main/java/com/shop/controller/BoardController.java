@@ -11,6 +11,8 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
@@ -39,10 +41,12 @@ public class BoardController {
     }
 
     @PostMapping("/writedone")
-    public String boardWritePro(Board board) {
-
+    public ResponseEntity<?> boardWritePro(@RequestBody Board board, Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
+        }
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User user = (User) auth.getPrincipal();  // OK!
+        Member user = (Member) auth.getPrincipal();  // OK!
         String email = user.getUsername();
 
         Member member = memberService.findByEmail(email);
@@ -53,7 +57,7 @@ public class BoardController {
         System.out.println(member.getEmail());
         board.setWriterId(member);
         boardService.write(board);
-        return "redirect:/board/list";
+        return ResponseEntity.ok("작성 완료");
     }
 
     @GetMapping("/list")

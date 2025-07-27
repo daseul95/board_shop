@@ -40,6 +40,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     try {
       String jwt = parseJwt(request);
       if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
+        System.out.println("JWT 인증 성공: " + jwt);
         String email = jwtUtils.getUserNameFromJwtToken(jwt);
 
 
@@ -54,6 +55,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
         SecurityContextHolder.getContext().setAuthentication(authentication);
       }
     } catch (Exception e) {
+      System.out.println("JWT 인증 실패 또는 토큰 없음");
       logger.error("Cannot set user authentication: {}", e);
     }
 
