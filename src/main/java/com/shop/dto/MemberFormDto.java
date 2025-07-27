@@ -1,5 +1,6 @@
 package com.shop.dto;
 
+import com.shop.entity.Board;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -7,6 +8,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 import org.unbescape.xml.XmlEscape;
+
+import java.util.List;
 
 @Getter
 @Setter

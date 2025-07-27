@@ -1,6 +1,7 @@
 package com.shop.service;
 
 import com.shop.entity.Board;
+import com.shop.entity.Member;
 import com.shop.repository.BoardRepository;
 import lombok.RequiredArgsConstructor;
 import java.util.Optional;

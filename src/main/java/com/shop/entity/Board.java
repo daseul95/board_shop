@@ -1,5 +1,6 @@
 package com.shop.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -20,4 +21,9 @@ public class Board {
     private String title;
 
     private String content;
+
+    @ManyToOne
+    @JoinColumn(name="writerId")
+    @JsonBackReference
+    private Member writerId;
 }

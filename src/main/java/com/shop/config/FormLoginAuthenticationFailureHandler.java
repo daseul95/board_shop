@@ -12,7 +12,7 @@ public class FormLoginAuthenticationFailureHandler implements AuthenticationFail
 
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
-        response.sendRedirect("/members/login/error");
+        response.sendRedirect("/member/login/error");
     }
 
 }

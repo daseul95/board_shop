@@ -1,7 +1,9 @@
 package com.shop.controller;
 
 import com.shop.entity.Board;
+import com.shop.entity.Member;
 import com.shop.service.BoardService;
+import com.shop.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import java.util.Optional;
@@ -9,6 +11,9 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -25,24 +30,35 @@ public class BoardController {
     @Autowired
     private BoardService boardService;
 
+    @Autowired
+    private MemberService memberService;
+
     @GetMapping("/write")
     public String boardWriteFrom() {
         return "/board/write";
     }
 
-    @PostMapping("/writepro")
+    @PostMapping("/writedone")
     public String boardWritePro(Board board) {
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User user = (User) auth.getPrincipal();  // OK!
+        String email = user.getUsername();
+
+        Member member = memberService.findByEmail(email);
 
         System.out.println("writepro메소드 들어옴");
         System.out.println("제목: " + board.getTitle());
         System.out.println("내용: " + board.getContent());
-
+        System.out.println(member.getEmail());
+        board.setWriterId(member);
         boardService.write(board);
         return "redirect:/board/list";
     }
 
     @GetMapping("/list")
-    public String boardList(Model model, @PageableDefault(page=0, size=10, sort="boardId", direction= Sort.Direction.DESC) Pageable pageable) {
+    @ResponseBody
+    public Page<Board> boardList(Model model, @PageableDefault(page=0, size=10, sort="boardId", direction= Sort.Direction.DESC) Pageable pageable) {
         //서비스에서 생성한 리스트를 list라는 이름으로 반환하겠다.
         Page<Board> list = boardService.boardList(pageable);
         //페이지블럭 처리
@@ -57,10 +73,7 @@ public class BoardController {
         model.addAttribute("nowPage",nowPage);
         model.addAttribute("startPage", startPage);
         model.addAttribute("endPage", endPage);
-
-
-
         model.addAttribute("list", boardService.boardList(pageable));
-        return "/board/list";
+        return boardService.boardList(pageable);
     }
 }
